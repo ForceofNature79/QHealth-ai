@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>QHealth · Premium AI Assistant</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: #e9f2fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 850px;
+      height: 95vh;
+      max-height: 950px;
+      background: #ffffff;
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 52, 102, 0.08), 0 8px 20px rgba(0, 20, 60, 0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #cddff0;
+    }
+
+    /* Header — premium medical */
+    .chat-header {
+      background: #0b5e9e;
+      background: linear-gradient(115deg, #0a5f9e 0%, #1f7ab3 100%);
+      color: white;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid #a6c6e3;
+    }
+
+    .header-icon {
+      background: white;
+      color: #0a5f9e;
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .header-text h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.4px;
+    }
+
+    .header-text p {
+      font-size: 0.85rem;
+      opacity: 0.95;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .premium-badge {
+      background: rgba(255,255,255,0.18);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: auto;
+      backdrop-filter: blur(6px);
+      letter-spacing: 0.3px;
+    }
+
+    /* Chat area */
+    .chat-window {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 18px;
+      background: #f8fcff;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .message-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.bot {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 82%;
+      padding: 14px 18px;
+      border-radius: 24px;
+      font-size: 0.98rem;
+      line-height: 1.5;
+      box-shadow: 0 2px 8px rgba(0, 35, 70, 0.02);
+      word-break: break-word;
+    }
+
+    .user .message-bubble {
+      background: #0b5e9e;
+      color: white;
+      border-bottom-right-radius: 8px;
+    }
+
+    .bot .message-bubble {
+      background: white;
+      color: #1a3048;
+      border: 1px solid #dde9f5;
+      border-bottom-left-radius: 8px;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 14px 18px;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #6f9ac7;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* option chips */
+    .options-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 8px 0 4px;
+    }
+
+    .option-chip {
+      background: white;
+      border: 1.8px solid #b8d1ea;
+      color: #0b5e9e;
+      padding: 10px 22px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .option-chip:hover {
+      background: #0b5e9e;
+      color: white;
+      border-color: #0b5e9e;
+    }
+
+    .doctor-suggestion {
+      background: #e3f0fd;
+      border-left: 7px solid #0b5e9e;
+      padding: 14px 18px;
+      border-radius: 20px;
+      margin: 8px 0 4px;
+      font-weight: 500;
+    }
+
+    /* booking form */
+    .booking-card {
+      background: white;
+      border-radius: 28px;
+      padding: 20px;
+      margin: 10px 0;
+      border: 1px solid #cde1f2;
+      box-shadow: 0 8px 18px rgba(0, 60, 120, 0.04);
+    }
+
+    .booking-card h4 {
+      color: #0a3e6f;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e4f73;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.8px solid #d7e5f3;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      background: #fbfdff;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: #0b5e9e;
+      outline: none;
+    }
+
+    .book-btn {
+      background: #0b5e9e;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(11,94,158,0.2);
+    }
+
+    .confirmation-box {
+      background: #e1f3e8;
+      border-radius: 22px;
+      padding: 18px;
+      border: 1px solid #aacfdd;
+    }
+
+    .meet-link {
+      background: #f1f8ff;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-family: monospace;
+      border: 1px dashed #0b5e9e;
+      word-break: break-all;
+    }
+
+    /* footer */
+    .chat-footer {
+      background: white;
+      padding: 16px 20px;
+      border-top: 1px solid #d7e6f5;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-footer input {
+      flex: 1;
+      padding: 15px 18px;
+      border: 1.8px solid #dae9f5;
+      border-radius: 50px;
+      font-size: 0.98rem;
+      background: #fbfdff;
+    }
+
+    .chat-footer input:focus {
+      border-color: #0b5e9e;
+      outline: none;
+    }
+
+    .send-btn {
+      background: #0b5e9e;
+      color: white;
+      border: none;
+      width: 54px;
+      height: 54px;
+      border-radius: 30px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn:disabled {
+      background: #b6cee6;
+      cursor: not-allowed;
+    }
+
+    .disclaimer-bar {
+      background: #ecf3fa;
+      padding: 10px 20px;
+      font-size: 0.75rem;
+      color: #1a4a6b;
+      text-align: center;
+      border-top: 1px solid #c6ddef;
+    }
+
+    @media (max-width: 500px) {
+      .app-container { height: 100vh; max-height: none; border-radius: 0; }
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="chat-header">
+    <div class="header-icon"><i class="fas fa-heartbeat"></i></div>
+    <div class="header-text">
+      <h2>QHealth AI</h2>
+      <p><i class="fas fa-circle" style="font-size: 8px; color: #b3e6b3;"></i> Premium Assistant · 24/7</p>
+    </div>
+    <div class="premium-badge"><i class="fas fa-crown" style="margin-right: 6px;"></i> QHealth Pro</div>
+  </div>
+
+  <div class="chat-window" id="chatWindow"></div>
+
+  <div class="chat-footer">
+    <input type="text" id="userInput" placeholder="Describe your symptoms..." autocomplete="off" />
+    <button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+  </div>
+  <div class="disclaimer-bar">
+    <i class="fas fa-shield-alt"></i> AI health assistant · Always consult a doctor for diagnosis
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- QHEALTH CONFIG ----------
+    const WHATSAPP_NUMBER = '0762644774';  // QHealth WhatsApp
+    const SYSTEM_PROMPT = `You are a premium medical assistant for QHealth, a trusted healthcare provider.
+Ask symptoms step by step. Suggest doctor type (General, Gynecologist, Pediatrician, etc.) and urgency.
+Rules: No diagnosis, no prescriptions. Keep responses clear and compassionate.
+Always end with: "This is not a medical diagnosis. Please consult a doctor."`;
+
+    // DOM elements
+    const chatWindow = document.getElementById('chatWindow');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // State
+    let chatHistory = [];
+    let isWaitingForAI = false;
+    
+    const STORAGE_CHAT = 'qhealth_premium_chat';
+    const STORAGE_USER = 'qhealth_user_name';
+    const STORAGE_BOOKINGS = 'qhealth_bookings';
+
+    // ---------- AI ENGINE (built‑in, no API key required) ----------
+    // Advanced keyword + contextual response generator — premium feel.
+    function generateAIResponse(userMessage) {
+      const msg = userMessage.toLowerCase();
+      let response = '';
+      
+      // Step‑by‑step symptom extraction & doctor suggestion
+      if (msg.includes('fever') || msg.includes('headache') || msg.includes('cough') || msg.includes('sore throat')) {
+        response = "I see you're experiencing fever/headache or respiratory symptoms. May I ask if you also have body aches, fatigue, or loss of taste/smell? \n\n🩺 Suggested doctor: General Physician / Primary Care.";
+      } else if (msg.includes('pregnancy') || msg.includes('pregnant') || msg.includes('obgyn') || msg.includes('gynecologist')) {
+        response = "Thank you for sharing. I recommend consulting a Gynecologist. Could you tell me if you've had any specific discomfort or questions about prenatal care?";
+      } else if (msg.includes('child') || msg.includes('kid') || msg.includes('baby') || msg.includes('pediatric')) {
+        response = "For pediatric concerns, a Pediatrician is best. What symptoms is the child experiencing? (fever, rash, etc.)";
+      } else if (msg.includes('skin') || msg.includes('rash') || msg.includes('acne')) {
+        response = "Skin issues can vary. A Dermatologist would be appropriate. Is there itching, redness, or any other details?";
+      } else if (msg.includes('stomach') || msg.includes('abdominal') || msg.includes('diarrhea') || msg.includes('nausea')) {
+        response = "Digestive symptoms noted. A Gastroenterologist or General Doctor can help. Have you experienced any specific foods triggering this?";
+      } else if (msg.includes('chest pain') || msg.includes('heart') || msg.includes('palpitations')) {
+        response = "⚠️ Chest discomfort requires prompt attention. I strongly advise seeing a doctor or visiting urgent care. (Cardiologist if referred)";
+      } else if (msg.includes('urgent') || msg.includes('emergency') || msg.includes('severe')) {
+        response = "If this is an emergency, please call local emergency services immediately. Otherwise, please describe your symptoms.";
+      } else if (msg.includes('hello') || msg.includes('hi') || msg.length < 5) {
+        response = "Hello! I'm your QHealth AI assistant. Please describe your symptoms, and I'll guide you to the right specialist.";
+      } else {
+        response = "Thank you for describing that. To help you better, could you tell me more about when this started and any other symptoms? \n\n🩺 Based on initial info, a General Practitioner can evaluate you.";
+      }
+      
+      // Always append disclaimer
+      if (!response.includes('This is not a medical diagnosis')) {
+        response += '\n\nThis is not a medical diagnosis. Please consult a doctor.';
+      }
+      return response;
+    }
+
+    // Doctor suggestion logic (pure JS)
+    function getDoctorSuggestionFromHistory() {
+      const allUserText = chatHistory.filter(m => m.role === 'user').map(m => m.content.toLowerCase()).join(' ');
+      if (allUserText.includes('pregnancy') || allUserText.includes('pregnant') || allUserText.includes('gynecologist')) {
+        return '🩺 Suggested: Gynecologist (Ob-Gyn)';
+      } else if (allUserText.includes('child') || allUserText.includes('kid') || allUserText.includes('baby') || allUserText.includes('pediatric')) {
+        return '🩺 Suggested: Pediatrician';
+      } else if (allUserText.includes('fever') || allUserText.includes('headache') || allUserText.includes('cough') || allUserText.includes('flu')) {
+        return '🩺 Suggested: General Doctor / Primary Care';
+      } else if (allUserText.includes('skin') || allUserText.includes('rash')) {
+        return '🩺 Suggested: Dermatologist';
+      }
+      return '🩺 Suggested: General Physician (based on symptoms)';
+    }
+
+    // ---------- RENDER CHAT ----------
+    function renderChat() {
+      let html = '';
+      chatHistory.forEach((msg, idx) => {
+        const isUser = msg.role === 'user';
+        const bubbleClass = isUser ? 'user' : 'bot';
+        let content = (msg.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        html += `<div class="message-row ${bubbleClass}"><div class="message-bubble">${content}</div></div>`;
+      });
+
+      if (isWaitingForAI) {
+        html += `<div class="message-row bot"><div class="message-bubble typing-indicator"><span></span><span></span><span></span></div></div>`;
+      }
+
+      chatWindow.innerHTML = html;
+      if (!isWaitingForAI) addDynamicComponents();
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function addDynamicComponents() {
+      if (chatHistory.length === 0) return;
+      const lastMsg = chatHistory[chatHistory.length - 1];
+      if (lastMsg.role !== 'assistant') return;
+      
+      const lastRow = chatWindow.querySelector('.message-row.bot:last-child');
+      if (!lastRow) return;
+      if (lastRow.nextElementSibling?.classList.contains('dynamic-options-container')) return;
+
+      const container = document.createElement('div');
+      container.className = 'dynamic-options-container';
+      
+      // Options chips
+      const optionsDiv = document.createElement('div');
+      optionsDiv.className = 'options-container';
+      optionsDiv.innerHTML = `
+        <div class="option-chip" data-action="book"><i class="fas fa-calendar-check"></i> Book consultation</div>
+        <div class="option-chip" data-action="support"><i class="fab fa-whatsapp"></i> WhatsApp support</div>
+      `;
+      container.appendChild(optionsDiv);
+      
+      // Doctor suggestion
+      const suggestion = getDoctorSuggestionFromHistory();
+      if (suggestion) {
+        const suggDiv = document.createElement('div');
+        suggDiv.className = 'doctor-suggestion';
+        suggDiv.innerHTML = `<i class="fas fa-user-md" style="margin-right:10px;"></i> ${suggestion}`;
+        container.appendChild(suggDiv);
+      }
+      
+      lastRow.insertAdjacentElement('afterend', container);
+      
+      container.querySelectorAll('.option-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          if (chip.dataset.action === 'book') showBookingForm();
+          else if (chip.dataset.action === 'support') openWhatsAppSupport();
+        });
+      });
+    }
+
+    // ---------- BOOKING & WHATSAPP INTEGRATION ----------
+    function showBookingForm() {
+      const existing = document.querySelector('.dynamic-options-container');
+      if (existing) existing.remove();
+      
+      const lastRow = chatWindow.querySelector('.message-row.bot:last-child');
+      const container = document.createElement('div');
+      container.className = 'dynamic-options-container';
+      
+      const formDiv = document.createElement('div');
+      formDiv.className = 'booking-card';
+      formDiv.innerHTML = `
+        <h4><i class="fas fa-video"></i> Schedule video consultation</h4>
+        <div class="form-group">
+          <label>Full name</label>
+          <input type="text" id="bookingName" placeholder="e.g., Jane Doe" value="${localStorage.getItem(STORAGE_USER) || ''}">
+        </div>
+        <div class="form-group">
+          <label>Preferred time</label>
+          <input type="text" id="bookingTime" placeholder="Tomorrow 10:00 AM or date">
+        </div>
+        <div class="form-group">
+          <label>Symptoms summary</label>
+          <textarea id="bookingSymptoms" rows="2" placeholder="Brief summary for the doctor"></textarea>
+        </div>
+        <button class="book-btn" id="submitBookingBtn">Confirm & get Meet link</button>
+        <p style="font-size:0.8rem; margin-top:12px;"><i class="fab fa-whatsapp"></i> Summary will be sent to QHealth WhatsApp</p>
+      `;
+      container.appendChild(formDiv);
+      lastRow.insertAdjacentElement('afterend', container);
+      
+      const lastUserMsg = [...chatHistory].reverse().find(m => m.role === 'user');
+      if (lastUserMsg) document.getElementById('bookingSymptoms').value = lastUserMsg.content;
+      
+      document.getElementById('submitBookingBtn').addEventListener('click', processBookingAndSendWhatsApp);
+    }
+
+    function processBookingAndSendWhatsApp() {
+      const name = document.getElementById('bookingName').value.trim();
+      const time = document.getElementById('bookingTime').value.trim();
+      const symptoms = document.getElementById('bookingSymptoms').value.trim();
+      if (!name || !time) { alert('Please enter name and preferred time'); return; }
+      
+      localStorage.setItem(STORAGE_USER, name);
+      
+      // Generate Google Meet style link
+      const meetId = 'qhealth-' + Math.random().toString(36).substring(2, 8) + '-' + 
+                     Math.random().toString(36).substring(2, 5);
+      const meetLink = `https://meet.google.com/${meetId}`;
+      
+      // Save booking (local)
+      const bookings = JSON.parse(localStorage.getItem(STORAGE_BOOKINGS) || '[]');
+      bookings.push({ name, time, symptoms, meetLink, date: new Date().toISOString() });
+      localStorage.setItem(STORAGE_BOOKINGS, JSON.stringify(bookings));
+      
+      // ----- SEND TO WHATSAPP (QHealth number) -----
+      const summaryText = `*QHealth Appointment*%0A👤 ${name}%0A🕒 ${time}%0A📋 Symptoms: ${symptoms}%0A🔗 Meet: ${meetLink}`;
+      const waUrl = `https://wa.me/${WHATTSAPP_NUMBER}?text=${summaryText}`;
+      window.open(waUrl, '_blank');  // opens WhatsApp
+      
+      // Remove form & show confirmation
+      const container = document.querySelector('.dynamic-options-container');
+      if (container) container.remove();
+      
+      const confirmMsg = `✅ *Booking confirmed!* \n\n👤 ${name}\n🕒 ${time}\n🔗 <a href="${meetLink}" target="_blank">${meetLink}</a>\n\n📱 A summary has been sent to QHealth WhatsApp (${WHATTSAPP_NUMBER}). Our team will confirm shortly.`;
+      
+      chatHistory.push({ role: 'assistant', content: confirmMsg });
+      localStorage.setItem(STORAGE_CHAT, JSON.stringify(chatHistory));
+      renderChat();
+    }
+
+    function openWhatsAppSupport() {
+      const supportMsg = `Hello QHealth, I need assistance from the AI chat.`;
+      const url = `https://wa.me/${WHATTSAPP_NUMBER}?text=${encodeURIComponent(supportMsg)}`;
+      window.open(url, '_blank');
+      
+      // Also add a message
+      chatHistory.push({ role: 'assistant', content: `📞 Opening WhatsApp to connect with QHealth support (${WHATTSAPP_NUMBER}). Feel free to describe your issue there.` });
+      localStorage.setItem(STORAGE_CHAT, JSON.stringify(chatHistory));
+      renderChat();
+    }
+
+    // ---------- SEND MESSAGE & AI FLOW ----------
+    async function handleSendMessage() {
+      const text = userInput.value.trim();
+      if (!text || isWaitingForAI) return;
+      
+      chatHistory.push({ role: 'user', content: text });
+      localStorage.setItem(STORAGE_CHAT, JSON.stringify(chatHistory));
+      renderChat();
+      userInput.value = '';
+      
+      isWaitingForAI = true;
+      renderChat();
+      
+      // simulate AI thinking (premium experience)
+      await new Promise(r => setTimeout(r, 800));
+      
+      const aiReply = generateAIResponse(text);
+      
+      chatHistory.push({ role: 'assistant', content: aiReply });
+      localStorage.setItem(STORAGE_CHAT, JSON.stringify(chatHistory));
+      isWaitingForAI = false;
+      renderChat();
+    }
+
+    // ---------- INITIAL LOAD ----------
+    function initializeChat() {
+      const saved = localStorage.getItem(STORAGE_CHAT);
+      if (saved) {
+        try { chatHistory = JSON.parse(saved); } catch(e){ chatHistory = []; }
+      }
+      if (!chatHistory.length) {
+        chatHistory.push({ 
+          role: 'assistant', 
+          content: "👋 Welcome to QHealth Premium AI Assistant. I'm here to understand your symptoms and guide you to the right specialist. Please describe what you're experiencing." 
+        });
+        localStorage.setItem(STORAGE_CHAT, JSON.stringify(chatHistory));
+      }
+      renderChat();
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', handleSendMessage);
+    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleSendMessage(); } });
+    
+    initializeChat();
+
+    // WhatsApp number global (remove any placeholder)
+    window.WHATSAPP_NUMBER = WHATSAPP_NUMBER;
+  })();
+</script>
+</body>
+</html>
